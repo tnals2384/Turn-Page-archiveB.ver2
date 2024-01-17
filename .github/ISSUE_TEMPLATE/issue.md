@@ -1,11 +1,11 @@
----
-name: Issue
-about: issue를 작성해주세요.
-title: ''
-labels: ''
-assignees: ''
+## ❗️ 이슈 번호
+Closes 
 
----
+## 📝 작업 내용
+
+## ☀️ TEST 결과
+
+## 💭 주의 사항
 
 ## Description
 > 설명을 입력하세요.
