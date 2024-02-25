@@ -1,4 +1,4 @@
-package com.example.turnpage.book.controller;
+package com.example.turnpage.domain.book.controller;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -8,6 +8,6 @@ public class BookController {
 
     @PostMapping("/books")
     public String postBook(String data) {
-        return "hi";
+        return data;
     }
 }
