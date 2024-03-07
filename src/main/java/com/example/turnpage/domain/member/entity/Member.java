@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -31,6 +32,10 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false)
     private String email;
 
+    // OAuth 적용 전까지 임시로 사용된다. 모든 계정의 비밀번호는 "password"로 설정.
+    @Column(nullable = false)
+    private String password;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
@@ -42,4 +47,17 @@ public class Member extends BaseTimeEntity {
 
     @Column(nullable = false)
     private int point;
+
+    @Builder
+    public Member(String name, String email, String password, String role, String image, String inviteCode) {
+        this.id = null;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = Role.valueOf(role);
+        this.image = image;
+        this.inviteCode = inviteCode;
+        this.point = 0;
+    }
+
 }
