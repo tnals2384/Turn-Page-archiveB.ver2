@@ -35,6 +35,9 @@ logging:
       hibernate:
         SQL: debug
 
+      springframework:
+        security: TRACE
+
   pattern:
   dateformat: yyyy-MM-dd HH:mm:ss.SSS, Asia/Seoul
 
