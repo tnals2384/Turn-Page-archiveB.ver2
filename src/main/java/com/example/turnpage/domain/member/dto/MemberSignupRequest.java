@@ -1,25 +1,24 @@
 package com.example.turnpage.domain.member.dto;
 
 import com.example.turnpage.domain.member.entity.Member;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.example.turnpage.domain.member.entity.Role;
+import lombok.*;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
-@Setter
 @NoArgsConstructor
-public class MemberSignupRequestDto {
+@AllArgsConstructor
+@Builder
+public class MemberSignupRequest {
     private String username;
     private String password;
 
-    public Member toEntity() {
+    public Member toEntity(String password) {
         return Member.builder()
                 .name(username.split("@")[0])
                 .email(username)
                 .password(password)
-                .role("USER")
+                .role(String.valueOf(Role.USER))
                 .inviteCode(RandomStringUtils.random(10, true, true))
                 .build();
     }
