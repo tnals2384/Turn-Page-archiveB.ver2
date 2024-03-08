@@ -1,24 +1,44 @@
 package com.example.turnpage.global.config;
 
-import com.example.turnpage.global.config.security.MemberDetails;
-import jakarta.servlet.http.HttpSession;
+import com.example.turnpage.global.config.jwt.JwtAuthenticationFilter;
+import com.example.turnpage.global.config.jwt.JwtAuthorizationFilter;
+import com.example.turnpage.global.config.jwt.JwtUtils;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.intercept.AuthorizationFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+    private final JwtUtils jwtUtils;
+    private final AuthenticationConfiguration authenticationConfiguration;
+
     @Bean
     public static PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    //인증처리를 해주는 authenticationManager
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtils);
+        filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
+        return filter;
     }
 
     @Bean
@@ -36,15 +56,8 @@ public class SecurityConfig {
                                 "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .formLogin(formLogin ->
-                        formLogin
-                                .usernameParameter("username")
-                                .passwordParameter("password")
-                                .loginPage("/auth/login")
-                                .defaultSuccessUrl("/")
-                                .failureUrl("/auth/login?failed=1")
-                                .permitAll()
-                );
+                .addFilterBefore(new JwtAuthorizationFilter(jwtUtils), JwtAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
