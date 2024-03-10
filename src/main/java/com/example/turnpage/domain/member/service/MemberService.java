@@ -11,16 +11,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class MemberService {
     private final MemberRepository memberRepository;
-    private final PasswordEncoder passwordEncoder;
 
-    public Long signup(MemberSignupRequest memberSignupRequest) {
-        // 이메일 중복 확인 코드
-        //
 
-        String encodedPassword = passwordEncoder.encode(memberSignupRequest.getPassword());
-
-        Member member = memberSignupRequest.toEntity(encodedPassword);
-        Long memberId = memberRepository.save(member).getId();
-        return memberId;
+    public Member findByEmail(String email) {
+        return memberRepository.findByEmail(email).orElseThrow(RuntimeException::new);
     }
 }
