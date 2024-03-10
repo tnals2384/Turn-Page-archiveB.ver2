@@ -1,0 +1,32 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/archiveB?serverTimezone=Asia/Seoul
+    username: root
+    password: 1111111111
+
+  sql:
+    init:
+      mode: never
+#      schema-locations: classpath:/schema.sql
+#        data-locations: classpath:/data.sql
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    open-in-view: true
+
+    hibernate:
+      ddl-auto: create-drop
+jwt:
+  secret_key: springboot-jwt
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
+
+      springframework:
+        security: TRACE
+
+  pattern:
+  dateformat: yyyy-MM-dd HH:mm:ss.SSS, Asia/Seoul
