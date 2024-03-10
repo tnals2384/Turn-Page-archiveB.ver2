@@ -27,11 +27,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         String tokenValue = jwtUtils.getJwtFromHeader(req);
         //가져온 토큰이 유효한지 확인
         if (StringUtils.hasText(tokenValue)) {
-            if (!jwtUtils.validateToken(tokenValue)) {
-                log.error("Token Error");
-                return;
-            }
-
             //유효한 토큰일 경우 인증 정보 설정
             try {
                 SecurityContext context = SecurityContextHolder.createEmptyContext();

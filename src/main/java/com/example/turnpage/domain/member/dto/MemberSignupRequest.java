@@ -13,12 +13,11 @@ public class MemberSignupRequest {
     private String username;
     private String password;
 
-    public Member toEntity(String password) {
+    public Member toEntity() {
         return Member.builder()
                 .name(username.split("@")[0])
                 .email(username)
-                .password(password)
-                .role(String.valueOf(Role.USER))
+                .role(Role.USER)
                 .inviteCode(RandomStringUtils.random(10, true, true))
                 .build();
     }

@@ -8,17 +8,19 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Entity
 @SQLDelete(sql = "UPDATE member SET deleted_at = CURRENT_TIMESTAMP WHERE member_id = ?")
+@Builder
+@DynamicInsert
 @SQLRestriction("deleted_at is NULL")
 public class Member extends BaseTimeEntity {
     @Id
@@ -32,32 +34,30 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false)
     private String email;
 
-    // OAuth 적용 전까지 임시로 사용된다. 모든 계정의 비밀번호는 "password"로 설정.
-    @Column(nullable = false)
-    private String password;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
 
     private String image;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private SocialType socialType;
+
+    @ColumnDefault("1111")
     @Column(name = "invite_code", nullable = false)
     private String inviteCode;
 
+    @ColumnDefault("0")
     @Column(nullable = false)
     private int point;
 
-    @Builder
-    public Member(String name, String email, String password, String role, String image, String inviteCode) {
-        this.id = null;
+
+    public Member update(String name, String image) {
         this.name = name;
-        this.email = email;
-        this.password = password;
-        this.role = Role.valueOf(role);
         this.image = image;
-        this.inviteCode = inviteCode;
-        this.point = 0;
+
+        return this;
     }
 
 }

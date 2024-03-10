@@ -1,8 +1,13 @@
 package com.example.turnpage.global.config;
 
+import com.example.turnpage.domain.member.repository.RefreshTokenRepository;
+import com.example.turnpage.domain.member.service.MemberService;
 import com.example.turnpage.global.config.jwt.JwtAuthenticationFilter;
 import com.example.turnpage.global.config.jwt.JwtAuthorizationFilter;
 import com.example.turnpage.global.config.jwt.JwtUtils;
+import com.example.turnpage.global.config.ouath.CustomOAuth2UserService;
+import com.example.turnpage.global.config.ouath.OAuth2AuthorizationRequestBasedOnCookieRepository;
+import com.example.turnpage.global.config.ouath.OAuth2SuccessHandler;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +17,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -23,42 +29,37 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     private final JwtUtils jwtUtils;
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final MemberService memberService;
 
     @Bean
-    public static PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public OAuth2AuthorizationRequestBasedOnCookieRepository oAuth2AuthorizationRequestBasedOnCookieRepository
+            () {
+        return new OAuth2AuthorizationRequestBasedOnCookieRepository();
     }
 
-    //인증처리를 해주는 authenticationManager
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
-    }
-    @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtils);
-        filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
-        return filter;
+    public OAuth2SuccessHandler oAuth2SuccessHandler() {
+        return new OAuth2SuccessHandler(jwtUtils,
+                refreshTokenRepository, memberService,oAuth2AuthorizationRequestBasedOnCookieRepository());
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
+        return http
                 .httpBasic(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .logout(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/public").permitAll()
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/error/**").permitAll()
-                        .requestMatchers(
-                                "/swagger-ui/**",
-                                "/swagger-resources/**",
-                                "/v3/api-docs/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .addFilterBefore(new JwtAuthorizationFilter(jwtUtils), JwtAuthenticationFilter.class)
-                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-        return http.build();
+                .addFilterBefore(new JwtAuthorizationFilter(jwtUtils), UsernamePasswordAuthenticationFilter.class)
+                .oauth2Login(oauth2 ->
+                oauth2.authorizationEndpoint(authorization -> authorization.authorizationRequestRepository(
+                                oAuth2AuthorizationRequestBasedOnCookieRepository()))
+                        .successHandler(oAuth2SuccessHandler())
+                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService)))
+                        .build();
     }
 }
