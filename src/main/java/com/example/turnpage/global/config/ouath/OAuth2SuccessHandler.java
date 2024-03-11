@@ -23,7 +23,7 @@ import java.time.Duration;
 public class OAuth2SuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
     private static final String REFRESH_TOKEN = "refresh_token";
     private static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(14);
-    private static final Duration ACCESS_TOKEN_DURATION = Duration.ofDays(1);
+    private static final Duration ACCESS_TOKEN_DURATION = Duration.ofMinutes(30);
 
 
     private final JwtUtils jwtUtils;

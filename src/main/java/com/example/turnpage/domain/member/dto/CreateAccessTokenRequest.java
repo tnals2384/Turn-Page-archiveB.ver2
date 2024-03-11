@@ -1,15 +1,14 @@
 package com.example.turnpage.domain.member.dto;
 
+
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class MemberLoginRequest {
-    private String username;
-    private String password;
+public class CreateAccessTokenRequest {
+    private String refreshToken;
 }
