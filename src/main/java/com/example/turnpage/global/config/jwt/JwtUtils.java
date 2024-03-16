@@ -46,7 +46,6 @@ public class JwtUtils {
                 .setIssuedAt(now) // iat: 토큰 발행 시간
                 .setExpiration(expiry) // exp: 만료 시간
                 .setSubject(member.getEmail()) // sub: 유저의 이메일
-                .claim("id", member.getId()) //클레임 id : 유저 id
                 //서명 : 비밀값과 해시값을 HS256 방식으로 암호화
                 .signWith(SignatureAlgorithm.HS256, jwtSecretKey)
                 .compact();
@@ -95,4 +94,5 @@ public class JwtUtils {
         }
         return null;
     }
+
 }

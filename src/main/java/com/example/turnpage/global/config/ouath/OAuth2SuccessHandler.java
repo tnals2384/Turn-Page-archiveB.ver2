@@ -35,8 +35,8 @@ public class OAuth2SuccessHandler extends SavedRequestAwareAuthenticationSuccess
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response, Authentication authentication) throws IOException {
-        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-        Member member = memberService.findByEmail((String) oAuth2User.getAttributes().get("email"));
+        CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
+        Member member = memberService.findByEmail(oAuth2User.getEmail());
 
         //리프레시 토큰 생성 -> 저장 -> 쿠키에 저장
         String refreshToken = jwtUtils.generateToken(member, REFRESH_TOKEN_DURATION);

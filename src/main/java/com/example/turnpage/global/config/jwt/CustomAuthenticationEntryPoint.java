@@ -4,6 +4,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthorizationCodeAuthenticationProvider;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
@@ -17,4 +18,5 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         System.out.println("인증되지 않은 사용자입니다.");
         response.sendRedirect("/error");
     }
+
 }

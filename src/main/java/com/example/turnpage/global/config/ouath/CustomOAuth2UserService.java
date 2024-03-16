@@ -42,10 +42,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         Member member = saveOrUpdate(registrationId, attributes);
         Set<GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(member.getRole().toString()));
 
-        return new DefaultOAuth2User(authorities, attributes.getAttributes(), attributes.getNameAttributesKey());
+        return new CustomOAuth2User(authorities, attributes.getAttributes(), attributes.getNameAttributesKey(), attributes);
 
     }
-
 
     //이미 존재하는 회원이라면 이름과 프로필 사진 업데이트,
     //처음 가입한다면 DB에 생성

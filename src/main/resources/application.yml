@@ -1,32 +1,48 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/archiveB?serverTimezone=Asia/Seoul
+    url: jdbc:mysql://localhost:3306/turnpage?serverTimezone=Asia/Seoul
     username: root
-    password: 1111111111
-
-  sql:
-    init:
-      mode: never
-#      schema-locations: classpath:/schema.sql
-#        data-locations: classpath:/data.sql
-
+    password: 11111111
+  data:
+    redis:
+      host: localhost
+      database: 0
+      port: 6379
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     open-in-view: true
 
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
+
+  # OAuth2 설정
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 913884522206-4imjhm7eoee976f0a1vflurpikjqp60u.apps.googleusercontent.c
+            client-secret: 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
+            scope:
+              - profile
+              - email
+          kakao:
+            client-id: 5fceed4a947e3da460b8a6f873faf5a9
+            client-secret: UUnwEuIpfb1Ewqlc6BD2bM1C14yKEnIb
+            authorization-grant-type: authorization_code
+            client-authentication-method: client_secret_post
+            client-name: Kakao
+            scope:
+              - profile_nickname
+              - account_email
+            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+#jwt 비밀키
 jwt:
   secret_key: springboot-jwt
-
-logging:
-  level:
-    org:
-      hibernate:
-        SQL: debug
-
-      springframework:
-        security: TRACE
-
-  pattern:
-  dateformat: yyyy-MM-dd HH:mm:ss.SSS, Asia/Seoul
